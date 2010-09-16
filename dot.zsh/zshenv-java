@@ -1,0 +1,28 @@
+# jdk things (currently, blackdown.com's):
+# ($JAVA_HOME/bin should also be in path)
+#export JAVA_HOME=/usr/local
+export JAVA_HOME=/opt/java
+
+# ant needs a ptr to its home, too
+export ANT_HOME=/usr/local
+
+export TOMCAT_HOME=/usr/local
+
+# set classpath:
+if [ -e ~/.classpath ]; then
+  CLASSPATH=""
+  for p in `/bin/cat ~/.classpath | /bin/grep -v '^#'`; do
+    # double-for to allow glob expansion in ~/.classpath
+    for d in `eval echo $p 2> /dev/null`; do
+      if test -z "$CLASSPATH"; then
+        CLASSPATH="$d"
+      else
+        CLASSPATH="$CLASSPATH:$d"
+      fi
+    done
+  done
+  if [ ! "$CLASSPATH" = "" ]; then
+    export CLASSPATH
+  fi
+fi
+

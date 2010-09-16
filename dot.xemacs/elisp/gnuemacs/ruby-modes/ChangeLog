@@ -1,0 +1,52 @@
+2003-10-31  Norbert Koch  <viteno@xemacs.org>
+
+	* Makefile (VERSION): XEmacs package 1.02 released.
+
+2003-03-09  Ben Wing  <ben@xemacs.org>
+
+	* Makefile:
+	Delete explicit compile:: and binkit: rules.
+	Don't add custom-load.elc to the list of generated elc's.
+
+2003-01-13  Rendhalver [Peter Brown]  <rendhalver@xemacs.org>
+
+	* Makefile (VERSION): XEmacs package 1.01 released.
+
+2003-01-05  Ville Skyttä  <scop@xemacs.org>
+
+	* Sync with upstream 1.6.8.
+
+	* README: New.
+	* rubydb3x.el: New.
+	* rubydb3x.el.upstream: New.
+	
+	* Makefile (PKG_TYPE): Change to regular.
+	(REQUIRES): Add debug.
+	(ELCS): Add rubydb3x.elc.
+	(EXTRA_SOURCES): New, add README.
+	* package-info.in (provides): Add rubydb.
+
+2003-01-06  Ville Skyttä  <scop@xemacs.org>
+
+	* inf-ruby.el: Make auto-mode and interpreter-mode-alist
+	modifications autoload-only.
+	* ruby-mode.el: Ditto.
+
+2002-11-29  Ben Wing  <ben@xemacs.org>
+
+	* .cvsignore: Remove files now handled automatically by CVS.
+	* Makefile: Use `compile' instead of hard-coded `all'.
+
+2002-10-15  Ville Skyttä  <scop@xemacs.org>
+
+	* Makefile (srckit): Remove.
+
+2002-09-25  Rendhalver [Peter Brown]  <rendhalver@xemacs.org>
+
+	* Makefile (VERSION): XEmacs package 1.00 released.
+
+2002-09-18  Ville Skyttä  <scop@xemacs.org>
+
+	* Package created, moved Ruby modes from the prog-modes
+	package here.
+

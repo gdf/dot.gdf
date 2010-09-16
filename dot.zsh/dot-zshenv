@@ -1,0 +1,5 @@
+#!/bin/zsh
+
+. $HOME/.zsh/dotfiles.zsh
+hosty_source $HOME/.zsh/zshenv
+

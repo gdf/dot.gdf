@@ -1,0 +1,41 @@
+#
+# zsh env variables.  sourced for each new shell
+#
+# This is the generic version, for host specific
+# settings use zshenv-$hostname.
+#
+
+#export MOZILLA_HOME=/usr/local/netscape
+export PAGER="less"
+export LESS='-MeRX'
+export EDITOR="vi"
+#export NNTPSERVER="news.speakeasy.net"
+# export NETHACKOPTIONS="autopickup,pickup_types:$,DECGraphics,!legacy,number_pad,rest_on_space,time,fruit:wensleydale,menustyle:C"
+#export NETHACKOPTIONS="autopickup,pickup_types:$,DECGraphics,!legacy,number_pad,rest_on_space,time,fruit:wensleydale,menustyle:C,color,dogname:Foofoo,catname:Baxter"
+#export NETHACKOPTIONS="autopickup,pickup_types:$,!legacy,number_pad,rest_on_space,time,fruit:wensleydale,menustyle:C,color,dogname:Foofoo,catname:Baxter"
+
+#export PATH="$PATH:/usr/X11/bin:/home/g-fast/bin"
+if [ -e ~/.path ]; then
+  path=(.)
+  path=( `/bin/cat ~/.path | /bin/grep -v '^#'` )
+  export path
+fi
+
+# set dircolors (done ok in /etc/profile)
+#eval `/bin/dircolors --sh`
+export LS_COLORS='no=00:fi=00:di=01;34:ln=01;36:pi=40;33:so=01;35:bd=40;33;01:cd=40;33;01:ex=01;32:*.cmd=01;32:*.exe=01;32:*.com=01;32:*.btm=01;32:*.bat=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.jpg=01;35:*.gif=01;35:*.bmp=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:';
+
+alias zz="echo ----------------------------------------------------------; echo; echo; echo; echo; echo"
+
+export PERL5LIB="$HOME/lib"
+
+#export NPX_PLUGIN_PATH=/opt/jre/plugin/i386/ns4
+
+#export CVS_RSH=`which ssh`
+
+source $HOME/.zsh/dotfiles.zsh
+#hosty_source $HOME/.zsh/zshenv-cvs
+hosty_source $HOME/.zsh/zshenv-java
+hosty_source $HOME/.zsh/zshenv-ruby
+
+

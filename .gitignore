@@ -1,0 +1,6 @@
+*~
+.hg/
+.hgignore
+.svn/
+dot.gnupg
+

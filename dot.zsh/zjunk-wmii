@@ -1,0 +1,38 @@
+# misc crap for wmii
+
+# notify command completion in status bar - from frank
+export WMII_WINDOW_INDEX=""
+export WMII_COMMAND=""
+export WMII_TAGS=""
+preexec() {
+  if [[ "xterm" == $TERM ]] ; then
+    WMII_WINDOW_INDEX=$(wmiir read /view/sel/sel/index)
+    WMII_WINDOW_COMMAND="$1"
+    WMII_TAGS=`wmiir read /view/sel/sel/tags`
+  fi
+}
+
+precmd() {
+  if [[ "xterm" == $TERM ]] ; then
+    if [[ $WMII_WINDOW_INDEX != $(wmiir read /view/sel/sel/index) ]] && [ -n "$WMII_WINDOW_INDEX" ] ; then
+      echo -ne "$WMII_WINDOW_INDEX: \"$WMII_WINDOW_COMMAND\" [~$WMII_TAGS]" | wmiir write /bar/10_recent/data
+      echo -ne "#FFFFFF #440000 #880000" | wmiir write /bar/10_recent/colors
+    fi
+  fi
+}
+
+alias clearbar="echo -n '' | wmiir write /bar/10_recent/data"
+
+# print info about the names/classes/tags of all wmii client (windows)
+clientlist() {
+  # this read will break under wmii > 3.1
+  for i in $(wmiir read /client | awk '{print $10}'); do
+    echo -n "#$i ["
+    wmiir read /client/$i/tags 
+    echo -n "] ("
+    wmiir read /client/$i/class
+    echo -n ") \""
+    wmiir read /client/$i/name
+    echo \"
+  done
+}

@@ -1,0 +1,72 @@
+# misc stuffas
+
+source $HOME/.zsh/dotfiles.zsh
+
+#precmd() { echo; rumor -t -l5 }
+echo -n "[10;22]"
+
+#alias xterm='xterm -geometry 80x47 -bg gray80 -fg gray35'
+
+# # this rules.  from zefram.
+# function precmd {
+#   setopt no_ksh_arrays local_options
+#   # make the prompt reflect the load
+#   case "${${$(uptime)##*"load average: "}%%,*}" in
+#     0.[0-4]*) psvar[1]=':-)' ;;
+#     0.[5-9]*) psvar[1]=':-}' ;;
+#     1.*)      psvar[1]=':-]' ;;
+#     2.*)      psvar[1]=':-|' ;;
+#     3.*)      psvar[1]=':-[' ;;
+#     [45].*)   psvar[1]=':-{' ;;
+#     [67].*)   psvar[1]=':-(' ;;
+#     [89].*)   psvar[1]='|-o' ;;
+#     1[01234].*) psvar[1]='8-=' ;;
+#     1[45].*)  psvar[1]=',`-x' ;;
+#     *)        psvar[1]="..-/'" ;;
+#   esac
+#   # rumor
+#   echo; rumor -r $RUMOR_DB
+# }
+
+alias dl=lwp-download
+
+# alias mozilla='/opt/mozilla/mozilla'
+
+# opencm trial stuff
+# local repo, requires group perms
+#export OPENCM_REPOSITORY="file:/home/opencm/repository"
+# local-as-remote, requires server to be running
+#export OPENCM_REPOSITORY="opencm://localhost/"
+#alias ocm=opencm
+
+#export ENCAP_SOURCE=~/encap
+#export ENCAP_TARGET=~/
+
+if which cvswrapper > /dev/null; then
+ alias cvs=cvswrapper
+fi
+
+alias z='echo ------------------------------------------------------------------;echo;echo;echo;echo;echo;echo;echo'
+
+alias ee='gimp -d -s'
+
+# for wmii
+#if [ -n "$WMII_ADDRESS" ] && [ -e `echo "$WMII_ADDRESS" | sed -e 's/^.*!//'` ]; then
+#  hosty_source $HOME/.zsh/zjunk-wmii
+#fi
+
+# Set up ssh-agent
+# Use a well-known location for the agent socket, so that
+# we can find it without trickery
+export SSH_AUTH_SOCK=$HOME/.ssh/agent
+# (ssh-agent will delete the socket on shutdown, but not on unexpected death)
+if [ ! -e $SSH_AUTH_SOCK ]; then
+  echo "Starting ssh-agent..."
+  ssh-agent -t 86400 -a $SSH_AUTH_SOCK
+fi
+
+# DEATH TO CAPS LOCK
+if [ ! "$DISPLAY" = "" ]; then 
+  hosty_source $HOME/.zsh/zjunk-x11
+fi 
+

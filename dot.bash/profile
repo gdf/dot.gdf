@@ -1,0 +1,60 @@
+# gdf's bashrc
+
+alias ll='ls -laFG'
+
+CVS_RSH=ssh
+export CVS_RSH
+
+PATH=/usr/local/bin:$PATH:/System/Library/Frameworks/Python.framework/Versions/2.3/bin/:~/bin:/opt/apache-ant/bin:~/opt/godi/bin:~/opt/godi/sbin:/usr/local/mysql/bin:~/lib/pythoneggs
+
+MANPATH=$MANPATH:/usr/local/man
+
+ANT_HOME=/opt/apache-ant
+export ANT_HOME
+
+alias cvs=cvswrapper.pl
+export LESS=-MMeXR
+
+if [ -e ~/.pythonpath ]; then
+  for i in $(/usr/bin/egrep -v '^#' ~/.pythonpath); do
+    if [ "$PYTHONPATH" = "" ]; then
+      PYTHONPATH=$i
+    else
+      PYTHONPATH="$PYTHONPATH:$i"
+    fi
+  done
+fi
+export PYTHONPATH
+
+# rubygems
+export GEM_HOME=/usr/local/rubylib               # gem install/cache location
+export RUBYLIB=$GEM_HOME/lib/ruby/site_ruby/1.8  # include in ruby's $:
+export PATH=$PATH:$GEM_HOME/bin                  # for gem cli app(s)
+if [ ! -d $GEM_HOME ]; then
+  mkdir -p $GEM_HOME
+fi
+export RUBYLIB=$RUBYLIB:/usr/local/lib
+
+# make cd keep history
+alias dirs='dirs -v'
+alias cd='pushd -n `pwd` > /dev/null; cd'
+
+alias z='echo ------------------------------------------------------------------;echo;echo;echo;echo;echo'
+
+
+# Setting PATH for MacPython 2.5
+# The orginal version is saved in .profile.pysave
+PATH="/Library/Frameworks/Python.framework/Versions/Current/bin:${PATH}"
+export PATH
+#
+# Your previous .profile  (if any) is saved as .profile.mpsaved
+# Setting the path for MacPorts.
+export PATH=/opt/local/bin:/opt/local/sbin:$PATH
+
+alias sm='ssh cken ./bin/mailstat.pl'
+
+# the ansi escapes appear to make terminal a Sad Panda
+#export PS1='\e[0;34m\u@\h\e[0m:\e[1;32m\W\e[0m $ '
+
+export PATH=~/opt/clojure:$PATH
+

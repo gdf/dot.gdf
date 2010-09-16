@@ -1,0 +1,12 @@
+XTerm*Background: black
+XTerm*Foreground: gray60
+XTerm*Geometry: 80x47
+XTerm*RightScrollBar: true
+XTerm*ScrollBar: false
+XTerm*VisualBell: true
+XTerm*Font: -windows-proggyclean-*-*-*-*-*-*-*-*-*-*-*-*
+
+Xmessage*Background: black
+Xmessage*Foreground: gray70
+Xmessage*Font: -windows-proggyclean-*-*-*-*-*-*-*-*-*-*-*-*
+

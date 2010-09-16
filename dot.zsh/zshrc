@@ -1,0 +1,54 @@
+# .zshrc - source for interactive shells only
+# for some unkown reason, this gets clobbered if its in zshenv
+export LESS='-MeRX'
+
+# get system stuff
+#source /etc/profile
+
+# wig out if running in emacs shell
+[[ $EMACS = t ]] && unsetopt zle
+
+umask 022
+
+#if [[ $TERM = 'xterm' ]]; then
+#  # xterm
+#  stty erase "^H" intr "^C" kill "^U" eof "^D" susp "^Z"
+#else
+#  # tty
+#  stty erase "^?" intr "^C" kill "^U" eof "^D" susp "^Z"
+#fi
+
+# silly matt.
+# default binding is based on $EDITOR and $VISUAL settings.  bah.
+bindkey -e
+# make ctrl-left,right skip words
+bindkey "^[[5D" backward-word
+bindkey "^[[5C" forward-word
+bindkey "^[OC" forward-word
+bindkey "^[OD" backward-word
+
+
+# everyone's doing it...
+source $HOME/.zsh/zoptions
+
+DIRSTACKSIZE=20
+
+fignore=(~)
+
+#LOGCHECK=60
+
+watch=(all)
+WATCHFMT="%n has %a at %t on tty%l from %M"
+
+PROMPT='%n@%m [%T] %!%# '
+RPROMPT='%~' # this is neat
+
+#RUMOR_FILE='/home1/g-fast/mongo/libdata/usgs.rumor'
+#precmd() {echo;rumor}
+
+source $HOME/.zsh/dotfiles.zsh
+
+source $HOME/.zsh/zcompletion
+source $HOME/.zsh/zaliae
+hosty_source $HOME/.zsh/zjunk
+

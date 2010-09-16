@@ -1,0 +1,117 @@
+# completion stuff for zsh
+
+# ssh
+#sshhosts=(babba.advancenet.net zappy calliope mr-fu lrgs muffin kit students.uiuc.edu thats-not-my-bag-baby.isdn.uiuc.edu bigglesworth.isdn.uiuc.edu h2o-nwisw)
+#sshhosts=(bag babba titan coke pepsi)
+#compctl -k sshhosts ssh
+
+# cvs stuff
+cvs_commands=( \
+    release \
+    checkout \
+    add remove \
+    status \
+    diff \
+    commit update watch \
+    update \
+    tag rtag \
+    annotate history log watchers \
+)
+# for the command (first arg) complete w/$cvs_commands.
+# for any known command match non-dirs, 
+# except release (match dirs which are not CVS/) or
+#        checkout (match tails of dirs in $CVSROOT).
+# for any args after the first, match files or filepaths (the -f).
+compctl -f -x                                                      \
+    'c[-1,cvs]'                                  -k cvs_commands - \
+    'c[-1,release][-2,release]'                    -g '*(/)~CVS' - \
+    'c[-1,checkout][-2,checkout]'            -g $CVSROOT'/*(:t)' - \
+    'c[-1,add][-1,remove][-2,remove]'                 -g '*(^/)' - \
+    'c[-1,status][-2,status]'                         -g '*(^/)' - \
+    'c[-1,diff][-2,diff][-3,diff][-4,diff]'           -g '*(^/)' - \
+    'c[-1,commit][-1,update][-1,watch]'               -g '*(^/)' - \
+    'c[-1,tag][-2,tag][-1,rtag][-2,rtag]'             -g '*(^/)' - \
+    'c[-1,annotate][-1,history][-1,log][-1,watchers]' -g '*(^/)' - \
+    -- cvs
+
+# make completion on cd smarter
+compctl -g '*(/) .*(/) *(@) .*(@)' cd
+
+# functions
+compctl -F functions
+compctl -F function
+compctl -F unfunction
+
+# mh stuff, huzzah!
+
+# this will hurt
+get_seqs() {
+  reply=( `cat /home/gdfast/mh-mail/\`cat /home/gdfast/mh-mail/context | sed -e "s/^.*: //;"\`/.mh_sequences | sed -e "s/:.*//;"` )
+}
+
+# complete (zero-depth) folder names for mh commands
+compctl -x 's[+]' -g '/home/g-fast/mh-mail/*(:t)' -- scan refile show sacn scna csan
+
+# completion, works in zsh 3.1.x only
+# if [[ $ZSH_VERSION == '3.0.5' ]]; then
+#   compctl -K get_seqs -x 's[+]' -g '/home/gdfast/mh-mail/*(:t)' -- scan scna sacn
+#   compctl -K get_seqs -x 's[+]' -g '/home/gdfast/mh-mail/*(:t)' -- refile show
+# else
+#   compctl -K get_seqs -x 's[+]' -/ -W /home/gdfast/mh-mail -- scan sacn scna
+#   compctl -K get_seqs -x 's[+]' -/ -W /home/gdfast/mh-mail -- refile show
+# fi
+# #compctl -K get_seqs show
+
+# make 
+# the no initial '.' is personal preference, you may dislike it
+# note that Makefile may also be spelled 'makefile' or 'GNUmakefile'
+# hm. note also that rules can be 'rule :' or 'rule ::', etc...
+complete_make() {
+   if [ -e Makefile ]; then
+      reply=(`egrep '^[^#.][A-Za-z_0-9.]*:' Makefile | sed -e 's/:.*//'`)
+   else
+      reply=()
+   fi
+}
+# compctl -K complete_make make
+
+# tab completion on IRC is fun! - mrw
+ircnames=(gdf gdff Ch1XenZz)
+ircsrvrs=(kit irc.ais.net irc.concentric.net irc1.c-com.net)
+compctl -k ircsrvrs -x 'p[1]' -k ircnames -- irc
+
+# kill, disown, fg
+# complete procnums, signal names, job names (%*)
+compctl -j -P '%' + -s '`ps x | tail +2 | cut -c1-5`' + \
+       -x 's[-] p[1]' -k "($signals[1,-3])" -- kill disown fg
+
+# Frank's awesome ssh/known_hosts completion hack:
+complete_ssh() {
+  reply=( `cut -f1 -d, ~/.ssh/known_hosts` )
+}
+compctl -K complete_ssh -x 'n[1,@]' -K complete_ssh -- ssh
+compctl -f + -K complete_ssh -S : -x 'n[1,@]' -K complete_ssh -S : -- scp
+
+complete_chws_workspaces() {
+  reply=( `accurev show wspaces | grep -v '^Workspace' | cut -f1 -d' '` )
+}
+complete_chws_streams() {
+  depot=`accurev info | grep '^Depot:' | cut -f3 -d'	'`
+  reply=( `accurev show -p $depot streams | egrep '[[:space:]]Y' | cut -f1 -d' '` )
+}
+# chws -w $ws -b $backingstream
+#compctl -x 'c[-2,chws][-1,-w]' -K complete_chws_workspaces - 'c[-2,chws][-1,-b]' -K complete_chws_streams -- accurev
+#compctl -x 'c[-2,chws][-1,-w]' -K complete_chws_workspaces - 'c[-2,chws][-1,-b]' -K complete_chws_streams -- ac
+compctl -K complete_chws_streams accurev-reparentws
+
+
+# ocd
+ocd() {
+  cd `ocd-tool "$*"`
+}
+
+ocd_compl() {
+  reply=(`ocd-tool -l`)
+}
+
+compctl -K ocd_compl ocd

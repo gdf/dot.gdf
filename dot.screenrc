@@ -1,0 +1,17 @@
+vbell on
+escape ^ww
+deflogin off
+startup_message off
+
+screen -t "random" 0
+#screen -t "benedict" 1 #irc gdf irc.aca.imsa.edu
+screen -t "corwin" 2
+#screen -t "gerard" 3
+#screen -t "dierdre" 4
+#screen -t "brand" 5 
+screen -t "bleys" 6
+
+hardstatus alwayslastline
+hardstatus string '%{= KW}%-w%{= gW}%50> %n %t %{= KW}%+w%< %{= kG}%-=%{-}'
+
+

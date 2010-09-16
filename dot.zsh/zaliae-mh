@@ -1,0 +1,245 @@
+# mh aliases
+
+alias next='show next'
+alias showall='show -form showall'
+alias prev='show prev'
+alias mrw='pick -from mrw -or -from ra8543 -seq mrw'
+
+scannore() { scan $* | grep -vi "re:" }
+
+getsubject() {  
+    show -nocheckmime -form showsubject $* | \
+	perl -pe 's/(re:\s+|\[[^\]]*\]\s*)//gi;'
+    #show -nocheckmime -form showsubject $* | sed -e 's/^[Rre: ]*[rR]e: *//;'
+}
+thread() { pick -subj "`getsubject $*`" -seq thread }
+# was backticks
+alias th='thread last; scan thread'
+
+# fmark msgnum : create a marker message in current folder (-----------s)
+fmark() {
+	folder=`folder -fast`
+	echo making $folder/$1
+	if [[ -e $HOME/mh-mail/$folder/$1 ]]; then
+		echo $folder/$1 already exists, choose again
+	else
+		echo From: ------------------------- > $HOME/mh-mail/$folder/$1
+		echo To: -------------------------- >> $HOME/mh-mail/$folder/$1
+		echo Subject: --------------------- >> $HOME/mh-mail/$folder/$1
+		echo >> $HOME/mh-mail/$folder/$1
+		echo ------------------------------ >> $HOME/mh-mail/$folder/$1
+	fi
+}
+
+# sort and pack folders.  yeah, this is a sucky alias
+alias wozzle='for i in realtime nwisw h2o inbox historical box conference docparse instructions jobs qwdata; do ; echo $i ; sortm +$i ; folder +$i -pack ; done'
+
+# make subject index
+makeindex() {
+	rm -rf ~/mh-mail/subject.index
+	touch ~/mh-mail/subject.index
+	for i in `find ~/mh-mail/ -type d -print`; do
+		egrep "^Subject:" $i/[0-9]* >> ~/mh-mail/subject.index
+	done
+}
+
+# i can't type
+alias scna='scan'
+alias csan='scan'
+alias sacn='scan'
+
+# annotations
+alias needr='anno -comp X-needs-reply'
+alias pickneed='pick --x-needs-reply . -seq needs'
+
+# buff up comp.
+old_function_for_comp() {
+  if [ ${${1:#-*}:-XXX} = "XXX" ]; then
+    /usr/local/bin/comp $*
+  else
+    NEWDRAFT=`/usr/local/bin/mhpath +drafts new`
+    (cat ~/mh-mail/components | sed -e "s/To: /To: $1/;") > $NEWDRAFT
+    shift
+    /usr/local/bin/comp -use -file $NEWDRAFT $*
+  fi
+}
+
+comp_compl() {
+	aliasfile=`mhparam Path`/`mhparam Aliasfile`
+	reply=(`cat $aliasfile | cut -f 1 -d ':'`)
+}
+#compctl -K comp_compl comp
+
+# reply to a part of a mime message
+# usage: mimerepl <part#> <reploptions>
+mimerepl () {
+        rm -f `mhpath +temp`/1
+        mhn -show -part $* > `mhpath +temp`/1
+        repl +temp 1
+}
+
+# dip
+alias dcomp='comp -form components.dip'
+
+# from mrw:
+#------------------------------------------------------------------------------
+# Various MH completions by Peter Stephenson
+# You may need to edit where it says *Edit Me*.
+
+# The following three functions are best autoloaded.
+# mhcomp completes folders (including subfolders),
+# mhfseq completes sequence names and message numbers,
+# mhfile completes files in standard MH locations.
+
+function mhcomp {
+  # Completion function for MH folders.
+  # Works with both + (rel. to top) and @ (rel. to current).
+  local nword args pref char mhpath
+  read -nc nword
+  read -cA args
+
+  pref=$args[$nword]
+  char=$pref[1]
+  pref=$pref[2,-1]
+
+  # The $(...) here accounts for most of the time spent in this function.
+  if [[ $char = + ]]; then
+  #    mhpath=$(mhpath +)
+  # *Edit Me*: use a hard wired value here: it's faster.
+    mhpath=~/mh-mail
+  elif [[ $char = @ ]]; then
+    mhpath=$(mhpath)
+  fi
+
+  eval "reply=($mhpath/$pref*(N-/))"
+
+  # I'm frankly amazed that this next step works, but it does.
+  reply=(${reply#$mhpath/})
+}
+
+mhfseq() {
+  # Extract MH message names and numbers for completion.  Use of the
+  # correct folder, if it is not the current one, requires that it
+  # should be the previous command line argument.  If the previous
+  # argument is `-draftmessage', a hard wired draft folder name is used.
+
+  local folder foldpath words pos nums
+  read -cA words
+  read -cn pos
+
+  # Look for a folder name.
+  # First try the previous word.
+  if [[ $words[$pos-1] = [@+]* ]]; then
+    folder=$words[$pos-1]
+  # Next look and see if we're looking for a draftmessage
+  elif [[ $words[$pos-1] = -draftmessage ]]; then
+    # *Edit Me*:  shortcut -- hard-wire draftfolder here
+    # Should really look for a +draftfolder argument.
+    folder=+drafts
+  fi
+  # Else use the current folder ($folder empty)
+
+  if [[ $folder = +* ]]; then
+  # *Edit Me*:  use hard-wired path with + for speed.
+    foldpath=~/mh-mail/$folder[2,-1]
+  else
+    foldpath=$(mhpath $folder)
+  fi
+
+  # Extract all existing message numbers from the folder.
+  nums=($foldpath/<->(N:t))
+  # If that worked, look for marked sequences.
+  # *Edit Me*: if you never use non-standard sequences, comment out
+  # or delete the next three lines.
+  if (( $#nums )); then
+    nums=($nums $(mark $folder | awk -F: '{print $1}'))
+  fi
+
+  # *Edit Me*:  `unseen' is the value of Unseen-Sequence, if it exists;
+  set -A reply next cur prev first last all unseen $nums
+
+}
+
+mhfile () {
+  # Find an MH file; for use with -form arguments and the like.
+  # Use with compctl -K mhfile.
+
+  local mhfpath file
+  # *Edit Me*:  Array containing all the places MH will look for templates etc.
+  mhfpath=(~/mh-mail /etc/nmh)
+
+  # Emulate completeinword behaviour as appropriate
+  local wordstr
+  if [[ -o completeinword ]]; then
+    wordstr='$1*$2'
+  else
+    wordstr='$1$2*'
+  fi
+
+  if [[ $1$2 = */* ]]; then
+    # path given: don't search MH locations
+    eval "reply=($wordstr(.N))"
+  else
+    # no path:  only search MH locations.
+    eval "reply=(\$mhfpath/$wordstr(.N:t))"
+  fi
+}
+
+# Note: you must type the initial + or @ of a folder name to get
+# completion, even in places where only folder names are allowed.
+# Abbreviations for options are not recognised.  Hit tab to complete
+# the option name first.
+compctl -K mhfseq -x 's[+][@]' -K mhcomp -S / -q - \
+  's[-]' -k "(all fast nofast header noheader help list nolist \
+  pack nopack pop push recurse norecurse total nototal)" -- folder
+#18; compctl -K mhfseq -x 's[+][@],c[-1,-draftfolder] s[+][@]' \
+#18;   -K mhcomp -S / -q - 'c[-1,-draftmessage]' -K mhfseq - \
+#18;   'C[-1,-(editor|whatnowproc)]' -c - \
+#18;   's[-]' -k "(draftfolder draftmessage nodraftfolder editor noedit \
+#18;   file form use nouse whatnowproc nowhatnowproc help)" - \
+#18;   'c[-1,-form]' -K mhfile -- comp
+compctl -K mhfseq -x 's[+][@]' -K mhcomp -S / -q - \
+  's[-]' -k "(audit noaudit changecur nochangecur form format \
+  file silent nosilent truncate notruncate width help)" - \
+  'C[-1,-(audit|form)]' -K mhfile - 'c[-1,file]' -f + -- inc
+compctl -K mhfseq -x 's[+][@]' -K mhcomp -S / -q - \
+  's[-]' -k "(sequence add delete list public nopublic zero nozero help)" -- \
+  mark
+compctl -K mhfseq -x 's[+][@]' \
+  -K mhcomp -S / -q - 'c[-1,-file]' -f - 'c[-1,-rmmprov]' -c - \
+  's[-]' -k "(draft link nolink preserve nopreserve src file \
+  rmmproc normmproc help)" -- refile
+#; compctl -K mhfseq -x 's[+][@]' \
+#;   -K mhcomp -S / -q - 'c[-1,-draftmessage]'  -K mhfseq -\
+#;   's[-]' -k "(annotate noannotate cc nocc draftfolder nodraftfolder \
+#;   draftmessage editor noedit fcc filter form inplace noinplace query \
+#;   noquery width whatnowproc nowhatnowproc help)" - 'c[-1,(cc|nocc)]' \
+#;   -k "(all to cc me)" - 'C[-1,-(filter|form)]' -K mhfile - \
+#;   'C[-1,-(editor|whatnowproc)]' -c -- repl
+compctl -K mhfseq -x 's[+][@]' -K mhcomp -S / -q - \
+  's[-]' -k "(clear noclear form format header noheader reverse noreverse \
+  file help width)" - 'c[-1,-file]' -f - 'c[-1,-form]' -K mhfile -- scan sacn csna csan sanc
+compctl -K mhfseq -x 's[+][@]'  -K mhcomp -S / -q - \
+  's[-]' -k "(draft header noheader showproc noshowproc)" - \
+  'c[-1,showproc]' -c -- show next prev
+compctl -K mhfseq -x 's[+][@]' -K mhcomp -S / -q - 's[-]' \
+  -k "(help)" -- rmm
+compctl -K mhfseq -x 's[+][@]' -K mhcomp -S / -q - \
+  's[-]' -k "(after before cc date datefield from help list nolist \
+  public nopublic search sequence subject to zero nozero not or and \
+  lbrace rbrace)" -- pick
+compctl -K mhfseq -x 's[+][@]' -K mhcomp -S / -q - 's[-]' \
+  -k "(alias check draft draftfolder draftmessage help nocheck \
+  nodraftfolder)" -- whom
+
+# gdf - aliases for gcomp
+comp() {
+	/home/gdf/cheese/mhtools/gcomp $*
+}
+repl() {
+#	foo="$*"
+#	if test "'$foo'" -eq "''"; then
+#		foo="cur"
+#	fi
+	/home/gdf/cheese/mhtools/gcomp --repl `mhpath cur` $*
+}

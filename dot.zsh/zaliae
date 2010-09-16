@@ -1,0 +1,77 @@
+# this is likely wacky on nongnu ls
+alias ls='/bin/ls --color=tty -F -b -T 0'
+alias ll='ls -lFB'
+alias lo='logout'
+alias dirs='dirs -v'
+alias wh='whence -v'
+
+alias boing='chmod u+x'
+#alias zappy='ssh -i /home/g-fast/.ssh/identity.pp -l gdfast zappy.er.usgs.gov'
+
+alias xlock='xlock -timeelapsed -mode random'
+
+#newmail() {
+#	old=~/.oldmaillog
+#	new=~/.maillog
+#	if [[ -s $new ]]; then
+#		cat $new | tee -a $old | grep '+'
+#		rm $new
+#		touch $new
+#	else
+#		echo No new mail for you, only death\!
+#	fi
+#}
+
+newmail() {
+        old=~/.oldmaillog
+        new=~/.maillog
+        save=~/.last_newmail
+        if [[ -s $new ]]; then
+                rm -f $save
+                cat $new | tee -a $old | ~/mailstuff/bin/newmailgrep.pl | tee -a $save
+                rm $new
+                touch $new
+                # i spose i ought do some locking or something...  oh well.
+        else
+                echo No new mail for you, only death\!
+        fi
+}
+alias last_newmail='cat ~/.last_newmail'
+
+
+# tex stuff, for lazy fingers
+mkps() { tex $1.tex; dvips $1.tex -o $2.ps }
+compctl -g '*.tex(:r)' mkps
+
+# ph?
+alias phimsa='ph -s ns.imsa.edu'
+alias phuiuc='ph -s ns.cso.uiuc.edu'
+alias phusgs='ph -s ns.usgs.gov'
+
+## autoloaded functions, complains if no functions in ~/.zfunc
+#fpath=( ~/.zfunc )
+#for dirname in $fpath; do
+#  autoload $dirname/*(.x:t)
+#done
+
+# get all my history, dammit, not just the last 16 commands
+alias history='history 1'
+
+alias rot13='tr "a-mn-zA-MN-Z" "n-za-mN-ZA-M"'
+
+if [ -x /usr/bin/vim ]; then
+  alias vi=vim
+fi
+
+# mh stuff
+#source ~/.zsh/zaliae-mh
+
+#_default_cmd() { show $*; }
+
+alias t='~/bin/todo.sh'
+alias today='t ls @today'
+alias sm='ssh cken bin/mailstat.pl'
+
+ocd() {
+  cd `ocd-tool "$*"`
+}

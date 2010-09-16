@@ -1,0 +1,20 @@
+#
+
+# biff!  you're a pickle!
+function precmd {
+ if [ -s /home/gdf/.maillog ]; then 
+  xxx='*' 
+ else
+  xxx='%#'
+ fi
+PROMPT="%~
+%n@%m [%T] %!$xxx "
+echo; rumor -t -l5
+}
+
+function efind() {
+  foreach i in $*; do
+    /bin/ls -1 /usr/local/encap | grep $i 
+  done
+}
+

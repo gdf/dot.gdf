@@ -1,0 +1,49 @@
+# mh aliases
+
+alias next='show next'
+alias showall='show -form showall'
+alias prev='show prev'
+scannore() { scan $* | grep -vi "re:" }
+
+getsubject() {  
+    show -form showsubject $* | sed -e 's/^[Rre: ]*[rR]e: *//;'
+}
+thread() { pick -subj "`getsubject $*`" -seq thread }
+# was backticks
+alias th='thread last; scan thread'
+
+# fmark msgnum : create a marker message in current folder (-----------s)
+fmark() {
+	folder=`folder -fast`
+	echo making $folder/$1
+	if [[ -e $HOME/mh-mail/$folder/$1 ]]; then
+		echo $folder/$1 already exists, choose again
+	else
+		echo From: ------------------------- > $HOME/mh-mail/$folder/$1
+		echo To: -------------------------- >> $HOME/mh-mail/$folder/$1
+		echo Subject: --------------------- >> $HOME/mh-mail/$folder/$1
+		echo >> $HOME/mh-mail/$folder/$1
+		echo ------------------------------ >> $HOME/mh-mail/$folder/$1
+	fi
+}
+
+# sort and pack folders.  yeah, this is a sucky alias
+alias wozzle='for i in realtime nwisw h2o inbox historical box conference docparse instructions jobs qwdata; do ; echo $i ; sortm +$i ; folder +$i -pack ; done'
+
+# make subject index
+makeindex() {
+	rm -rf ~/mh-mail/subject.index
+	touch ~/mh-mail/subject.index
+	for i in `find ~/mh-mail/ -type d -print`; do
+		egrep "^Subject:" $i/[0-9]* >> ~/mh-mail/subject.index
+	done
+}
+
+# i can't type
+alias scna='scan'
+alias csan='scan'
+alias sacn='scan'
+
+# annotations
+alias needr='anno -comp X-needs-reply'
+alias pickneed='pick --x-needs-reply . -seq needs'

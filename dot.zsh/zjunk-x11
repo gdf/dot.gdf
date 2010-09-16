@@ -1,0 +1,15 @@
+# misc setup for when running under X
+
+if which title > /dev/null ; then
+  function preexec() {
+    title "[ ... ]" `basename "$(pwd)"`
+  }
+  function precmd() {
+    title `date +"[%T]"` `basename "$(pwd)"`
+  }
+fi
+
+xmodmap -e "remove lock = Caps_Lock"
+
+xset +fp ~/.gdf/x11-fonts/jmk
+xset +fp ~/.gdf/x11-fonts/proggy
